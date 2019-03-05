@@ -1,0 +1,41 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "aws_region": "eu-west-1"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "access_key": "{{ user `aws_access_key` }}",
+      "secret_key": "{{ user `aws_secret_key` }}",
+      "region":     "{{ user `aws_region` }}",
+      "source_ami": "ami-02a39bdb8e8ee056a",
+      "instance_type": "t2.micro",
+      "ssh_username": "ec2-user",
+      "ami_name": "gitlab-ci-runner-{{isotime \"2006-01-02-15-04-05\"}}",
+      "ami_description": "Gitlab CI runner",
+      "tags": {
+        "application": "gitlab-ci-runner",
+        "version": "9.0.0",
+        "os": "ubuntu",
+        "os_release": "16.04"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "scripts/ansible.sh"
+    },
+    {
+      "type": "ansible-local",
+      "extra_arguments": ["-vv"],
+      "playbook_dir": "ansible",
+      "group_vars": "ansible/group_vars",
+      "inventory_groups": "gitlab-ci-runners",
+      "playbook_file": "ansible/gitlab-ci-runner.yml"
+
+    }
+  ]
+}

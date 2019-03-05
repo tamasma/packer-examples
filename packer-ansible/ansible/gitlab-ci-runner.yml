@@ -1,0 +1,9 @@
+---
+- name: gitlab-ci runner install
+  hosts: gitlab-ci-runners
+  connection: local
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Install nginx
+      command: yum install httpd -y
